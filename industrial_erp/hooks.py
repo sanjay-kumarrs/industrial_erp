@@ -253,3 +253,14 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# ==================================================
+# QUOTATION APPROVAL EVENTS
+# ==================================================
+
+doc_events = {
+    "Quotation": {
+        "validate": "industrial_erp.events.quotation.set_quotation_approval_requirement",
+        "before_submit": "industrial_erp.events.quotation.validate_quotation_submission"
+    }
+}
