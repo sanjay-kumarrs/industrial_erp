@@ -63,9 +63,11 @@ def validate_quotation_submission(doc, method=None):
 
     approval_required = flt(doc.grand_total) > flt(settings.approval_limit)
 
+    roles = frappe.get_roles()
+
     if approval_required and not (
-        frappe.has_role("Sales Manager")
-        or frappe.has_role("System Manager")
+    "Sales Manager" in roles
+    or "System Manager" in roles
     ):
         frappe.throw(
             _("Only a Sales Manager or System Manager can submit "
