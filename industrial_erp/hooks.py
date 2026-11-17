@@ -258,9 +258,14 @@ app_license = "mit"
 # QUOTATION APPROVAL EVENTS
 # ==================================================
 
+
 doc_events = {
     "Quotation": {
         "validate": "industrial_erp.events.quotation.set_quotation_approval_requirement",
         "before_submit": "industrial_erp.events.quotation.validate_quotation_submission"
+    },
+
+    "Sales Invoice": {
+        "validate": "industrial_erp.events.sales_return.validate_sales_return"
     }
 }
