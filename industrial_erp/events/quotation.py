@@ -5,19 +5,14 @@ from frappe.utils import flt
 
 
 def set_quotation_approval_requirement(doc, method=None):
-    """
-    Determine whether a quotation requires management approval
-    using the configured company approval limit.
-    """
+    """Set the approval requirement using the company's configured limit."""
 
     settings = frappe.get_single("Sales Approval Settings")
 
-    # Ensure approval settings are enabled
     if not settings.enable_approval:
         doc.custom_requires_approval = 0
         return
 
-    # Ensure settings belong to the quotation's company
     if settings.company != doc.company:
         frappe.throw(
             _("Sales Approval Settings are not configured for company {0}.").format(
@@ -28,41 +23,51 @@ def set_quotation_approval_requirement(doc, method=None):
     approval_limit = flt(settings.approval_limit)
     quotation_total = flt(doc.grand_total)
 
-    # Calculate approval requirement
-    doc.custom_requires_approval = (
-        1 if quotation_total > approval_limit else 0
-    )
+    doc.custom_requires_approval = int(quotation_total > approval_limit)
 
 
 def validate_quotation_submission(doc, method=None):
-    """
-    Prevent quotations from being submitted without
-    completing the required approval workflow.
-    """
+    """Allow submission only through the Approved workflow transition."""
 
-    # Read the previously saved workflow state.
-    # This prevents users from directly changing the state
-    # to Approved and submitting in the same request.
-    previous_state = None
-
-    if not doc.is_new():
-        previous_state = frappe.db.get_value(
-            "Quotation",
-            doc.name,
-            "custom_workflow_state"
+    # The final workflow transition must set the state to Submitted.
+    if doc.custom_workflow_state != "Submitted":
+        frappe.throw(
+            _("Use the workflow action to submit the quotation. "
+              "The quotation must reach the Submitted state.")
         )
+
+    # During the workflow submission, the database should still contain
+    # the previous state: Approved.
+    previous_state = frappe.db.get_value(
+        "Quotation",
+        doc.name,
+        "custom_workflow_state"
+    )
 
     if previous_state != "Approved":
         frappe.throw(
-            _("Quotation must pass through the Approved workflow state before submission.")
+            _("Quotation must pass through the Approved state before submission.")
         )
 
-    # Additional authorization for quotations requiring approval
-    if doc.custom_requires_approval:
-        if not (
-            frappe.has_role("Sales Manager")
-            or frappe.has_role("System Manager")
-        ):
-            frappe.throw(
-                _("Only a Sales Manager or System Manager can submit an approved quotation requiring approval.")
+    settings = frappe.get_single("Sales Approval Settings")
+
+    if not settings.enable_approval:
+        return
+
+    if settings.company != doc.company:
+        frappe.throw(
+            _("Sales Approval Settings are not configured for company {0}.").format(
+                doc.company
             )
+        )
+
+    approval_required = flt(doc.grand_total) > flt(settings.approval_limit)
+
+    if approval_required and not (
+        frappe.has_role("Sales Manager")
+        or frappe.has_role("System Manager")
+    ):
+        frappe.throw(
+            _("Only a Sales Manager or System Manager can submit "
+              "a quotation requiring approval.")
+        )
