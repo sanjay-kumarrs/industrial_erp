@@ -27,15 +27,22 @@ def set_purchase_order_approval_requirement(doc, method=None):
 
 
 def validate_purchase_order_submission(doc, method=None):
-    """Block submission of Purchase Orders requiring approval."""
+    """Ensure high-value Purchase Orders are approved before submission."""
 
     if not doc.custom_requires_approval:
         return
 
-    if doc.custom_workflow_state != "Approved":
+    previous_state = frappe.db.get_value(
+        "Purchase Order",
+        doc.name,
+        "custom_workflow_state"
+    )
+
+    if (
+        doc.custom_workflow_state != "Submitted"
+        or previous_state != "Approved"
+    ):
         frappe.throw(
-            _("Purchase Order exceeds the approval limit of {0}. "
-              "Approval is required before submission.").format(
-                frappe.format_value(100000, {"fieldtype": "Currency"})
-            )
+            _("Purchase Order exceeds the approval limit. "
+              "Approval is required before submission.")
         )
