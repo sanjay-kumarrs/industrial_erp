@@ -267,5 +267,9 @@ doc_events = {
 
     "Sales Invoice": {
         "validate": "industrial_erp.events.sales_return.validate_sales_return"
+    },
+    "Purchase Order": {
+        "validate": "industrial_erp.events.purchase_order.set_purchase_order_approval_requirement",
+        "before_submit": "industrial_erp.events.purchase_order.validate_purchase_order_submission"
     }
 }
