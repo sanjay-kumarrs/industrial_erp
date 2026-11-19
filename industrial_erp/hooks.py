@@ -271,5 +271,8 @@ doc_events = {
     "Purchase Order": {
         "validate": "industrial_erp.events.purchase_order.set_purchase_order_approval_requirement",
         "before_submit": "industrial_erp.events.purchase_order.validate_purchase_order_submission"
-    }
+    },
+    "Purchase Receipt": {
+    "validate": "industrial_erp.events.purchase_receipt.validate_purchase_receipt_over_receipt"
+}
 }
