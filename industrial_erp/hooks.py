@@ -5,6 +5,14 @@ app_description = "this is a company\'s industrial requirement app"
 app_email = "kumarssanjayofficial@gmail.com"
 app_license = "mit"
 
+# The public entry point uses the app's custom web login. Authenticated users
+# continue to use standard Frappe session and document permissions.
+home_page = "industrial_login"
+website_route_rules = [
+	{"from_route": "/industrial-login", "to_route": "industrial_login"},
+	{"from_route": "/industrial-portal", "to_route": "industrial_portal"},
+]
+
 # Apps
 # ------------------
 

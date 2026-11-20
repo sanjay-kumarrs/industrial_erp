@@ -1,0 +1,23 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Sign in · Ironworks ERP{% endblock %}
+{% block head_include %}<link rel="stylesheet" href="/assets/industrial_erp/css/industrial_portal.css">{% endblock %}
+{% block page_content %}
+<main class="auth-shell">
+  <section class="auth-story">
+    <a class="brand-lockup" href="/industrial-login"><span class="brand-mark">I</span><span>IRONWORKS <small>OPERATIONS ERP</small></span></a>
+    <div class="story-copy"><p class="eyebrow">INDUSTRIAL OPERATIONS · CONNECTED</p><h1>Built for the work<br>that moves us forward.</h1><p class="story-lede">One clear view across sales, procurement, production, service and people.</p></div>
+    <div class="story-footer"><span class="status-dot"></span> SYSTEMS ONLINE <span>·</span> ERPNext workspace</div>
+  </section>
+  <section class="auth-panel"><div class="auth-card">
+    <div class="mobile-brand brand-lockup"><span class="brand-mark">I</span><span>IRONWORKS <small>OPERATIONS ERP</small></span></div>
+    <p class="eyebrow">WORKSPACE ACCESS</p><h2>Welcome back</h2><p class="muted">Sign in with your company account to continue.</p>
+    <form id="industrial-login-form" class="auth-form">
+      <label for="login-user">Email or username</label><input id="login-user" name="usr" type="text" autocomplete="username" placeholder="name@company.com" required>
+      <label for="login-password">Password</label><div class="password-wrap"><input id="login-password" name="pwd" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="password-toggle" type="button" aria-label="Show password">Show</button></div>
+      <p id="login-error" class="form-error" role="alert" hidden></p><button class="button button-primary button-wide" type="submit"><span>Sign in to workspace</span><span aria-hidden="true">→</span></button>
+    </form><div class="auth-note"><span class="lock-icon">▣</span> Secure access managed by your organization</div>
+  </div><footer class="auth-legal">IRONWORKS ERP <span>·</span> A connected operations workspace</footer></section>
+</main>
+<script src="/assets/industrial_erp/js/industrial_login.js"></script>
+{% endblock %}
