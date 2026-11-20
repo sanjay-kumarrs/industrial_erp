@@ -4,14 +4,15 @@ An industrial operations app for Frappe and ERPNext, with a responsive custom wo
 
 ## Frontend architecture
 
+- `industrial_erp/templates/pages/industrial_welcome.html` is the public landing page served at `/` with a centered button to `/industrial-login`.
 - `industrial_erp/templates/pages/industrial_login.html` serves the branded sign-in page at `/industrial-login`.
 - `industrial_erp/templates/pages/industrial_portal.html` serves the custom portal at `/industrial-portal`.
 - `industrial_erp/public/css/industrial_portal.css` contains the responsive visual system.
 - `industrial_erp/public/js/industrial_login.js` implements the custom login view.
 - `industrial_erp/public/js/industrial_portal.js` implements role routing, in-portal lists and forms, reports, notifications and live record counts.
-- `industrial_erp/hooks.py` sends the website home route to the custom login and maps readable routes to the page templates.
+- `industrial_erp/hooks.py` sends the website home route to the welcome page and maps readable routes to the page templates.
 
-The pages use Frappe's website renderer and plain HTML, CSS and JavaScript. The sidebar has three role-filtered expandable sections: CRM, Purchase and Sales. Sales roles see both Sales and CRM; Purchase-only roles see Purchase. Manufacturing and asset-care links are nested under Purchase, and people operations are nested under CRM. Administrators see every section and have one Frappe Desk link in the sidebar. A Reports dropdown sits immediately before Sign out in the top navigation.
+The pages use Frappe's website renderer and plain HTML, CSS and JavaScript. The landing page uses original SVG industrial artwork and capability icons. The portal sidebar has three role-filtered expandable sections: CRM, Purchase and Sales. Sales roles see both Sales and CRM; Purchase-only roles see Purchase. Manufacturing and asset-care links are nested under Purchase, and people operations are nested under CRM. Administrators see every section and have one Frappe Desk link in the sidebar. A Reports dropdown sits immediately before Sign out in the top navigation. The dashboard includes live record volume charts for the user's accessible workflows.
 
 ## Authentication
 
@@ -49,7 +50,7 @@ Frappe checks report and record access. A link may still be denied if the user's
 
 ## Installation and use
 
-Install the app in a Frappe bench and run the normal site migration/build process. Open the site root or `/industrial-login`; after login, users land on `/industrial-portal`. Non-admin users stay within the custom portal for their workflows. Administrators can open Desk using the single Desk option in their sidebar.
+Install the app in a Frappe bench and run the normal site migration/build process. The site root opens the welcome page; its centered button opens `/industrial-login`. After login, users land on `/industrial-portal`. Non-admin users stay within the custom portal for their workflows. Administrators can open Desk using the single Desk option in their sidebar.
 
 For local development, run the site with `bench start`, install/update the app on the target site, and use `bench build` after changing public assets. Users sign in with existing Frappe accounts.
 

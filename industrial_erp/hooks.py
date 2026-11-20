@@ -7,8 +7,9 @@ app_license = "mit"
 
 # The public entry point uses the app's custom web login. Authenticated users
 # continue to use standard Frappe session and document permissions.
-home_page = "industrial_login"
+home_page = "industrial_welcome"
 website_route_rules = [
+	{"from_route": "/industrial-welcome", "to_route": "industrial_welcome"},
 	{"from_route": "/industrial-login", "to_route": "industrial_login"},
 	{"from_route": "/industrial-portal", "to_route": "industrial_portal"},
 ]

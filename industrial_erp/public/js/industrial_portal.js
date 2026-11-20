@@ -40,13 +40,13 @@
 		], metrics: [["Sales Orders", "Sales Order", "↗", "Customer demand"], ["Purchase Orders", "Purchase Order", "⇄", "Supply activity"], ["Employees", "Employee", "◉", "People operations"]] },
 	};
 	const reportCatalog = [
-		{ label: "Sales Order Delivery Tracking", name: "Sales Order Analysis", roles: ["Sales User", "Sales Manager", "Maintenance User", "Accounts User", "Stock User"], kind: "sales-order-analysis" },
-		{ label: "Salesperson Monthly Target", name: "Salesperson Monthly Target Report", roles: ["Accounts User", "Accounts Manager", "Employee Self Service"], kind: "sales-target" },
-		{ label: "Purchase Order Pending Receipts", name: "Purchase Order Pending Receipts Report", roles: ["Stock User", "Purchase Manager", "Purchase User"], kind: "purchase-receipts" },
-		{ label: "Supplier Quotation Comparison", name: "Supplier Quotation Comparison", roles: ["Manufacturing Manager", "Purchase Manager", "Purchase User", "Stock User"], kind: "supplier-comparison" },
-		{ label: "Purchase Invoice Due Date Tracker", name: "Accounts Payable", roles: ["Accounts User", "Purchase User", "Accounts Manager", "Auditor"], kind: "accounts-payable" },
-		{ label: "Opportunity Stage Tracking", name: "Opportunity Stage Tracking Report", roles: ["Sales User", "Sales Manager"], kind: "opportunity-stage" },
-		{ label: "Meeting & Call Activity Summary", name: "Meeting Call Activity Summary", roles: [], kind: "activity-summary", all: true },
+		{ label: "Sales Order Delivery Tracking", name: "Sales Order Analysis", roles: ["Sales User", "Sales Manager", "Maintenance User", "Accounts User", "Stock User"], kind: "sales-order-analysis", area: "sales" },
+		{ label: "Salesperson Monthly Target", name: "Salesperson Monthly Target Report", roles: ["Accounts User", "Accounts Manager", "Employee Self Service"], kind: "sales-target", area: "sales" },
+		{ label: "Purchase Order Pending Receipts", name: "Purchase Order Pending Receipts Report", roles: ["Stock User", "Purchase Manager", "Purchase User"], kind: "purchase-receipts", area: "purchase" },
+		{ label: "Supplier Quotation Comparison", name: "Supplier Quotation Comparison", roles: ["Manufacturing Manager", "Purchase Manager", "Purchase User", "Stock User"], kind: "supplier-comparison", area: "purchase" },
+		{ label: "Purchase Invoice Due Date Tracker", name: "Accounts Payable", roles: ["Accounts User", "Purchase User", "Accounts Manager", "Auditor"], kind: "accounts-payable", area: "purchase" },
+		{ label: "Opportunity Stage Tracking", name: "Opportunity Stage Tracking Report", roles: ["Sales User", "Sales Manager"], kind: "opportunity-stage", area: "crm" },
+		{ label: "Meeting & Call Activity Summary", name: "Meeting Call Activity Summary", roles: [], kind: "activity-summary", area: "crm", all: true },
 	];
 	const schemas = {
 		Quotation: { fields: [["party_name", "Customer", "link", "Customer", true], ["transaction_date", "Quotation date", "date", "", true], ["valid_till", "Valid until", "date"], ["company", "Company", "link", "Company"]], lines: true, columns: ["name", "party_name", "transaction_date", "valid_till", "status", "grand_total", "docstatus"] },
@@ -78,6 +78,12 @@
 	function classify(roles) {
 		const set = new Set(roles);
 		if (set.has("System Manager") || set.has("Administrator")) return ["crm", "purchase", "sales", "production", "service", "hr", "management", "admin"];
+		if (set.has("Purchase User") || set.has("Purchase Manager")) {
+			const purchaseRoles = ["purchase"];
+			if (["Manufacturing Manager", "Manufacturing User", "Manufacturing"].some((role) => set.has(role))) purchaseRoles.push("production");
+			if (["Maintenance Manager", "Maintenance User", "Asset Manager"].some((role) => set.has(role))) purchaseRoles.push("service");
+			return purchaseRoles;
+		}
 		const result = [];
 		if (["Sales Manager", "Sales User", "Sales Master Manager", "CRM Manager", "CRM User"].some((role) => set.has(role))) result.push("crm", "sales");
 		if (["Purchase Manager", "Purchase User", "Stock User"].some((role) => set.has(role))) result.push("purchase");
@@ -114,7 +120,8 @@
 	function renderReports(roles) {
 		const roleSet = new Set(roles);
 		const isAdmin = roleSet.has("System Manager") || roleSet.has("Administrator");
-		const visible = reportCatalog.filter((item) => isAdmin || item.all || item.roles.some((role) => roleSet.has(role)));
+		const purchaseOnly = (roleSet.has("Purchase User") || roleSet.has("Purchase Manager")) && !isAdmin;
+		const visible = reportCatalog.filter((item) => (isAdmin || item.all || item.roles.some((role) => roleSet.has(role))) && !(purchaseOnly && item.area !== "purchase"));
 		const menu = $("#reports-menu");
 		menu.innerHTML = visible.length ? visible.map((item) => `<a class="report-menu-item" href="${report(item.name)}"><span class="report-menu-icon">▤</span><span>${escapeHtml(item.label)}<small>${item.roles.length ? "Role access" : "All users"}</small></span><span class="report-menu-arrow">↗</span></a>`).join("") : '<div class="reports-empty">No reports are assigned to your roles.</div>';
 	}
@@ -141,6 +148,42 @@
 			if (doctype === "Lead" && label.startsWith("Open")) filters = { status: ["not in", ["Converted", "Do Not Contact", "Lost"]] };
 			$("#metric-" + index).textContent = await getCount(doctype, filters);
 		});
+	}
+	async function renderCharts(kinds) {
+		const chartGroups = {
+			crm: { label: "CRM", docs: [["Leads", "Lead"], ["Opportunities", "Opportunity"], ["Activities", "Event"]] },
+			sales: { label: "Sales", docs: [["Quotations", "Quotation"], ["Sales Orders", "Sales Order"], ["Invoices", "Sales Invoice"]] },
+			purchase: { label: "Purchase", docs: [["Purchase Orders", "Purchase Order"], ["Receipts", "Purchase Receipt"], ["Purchase Invoices", "Purchase Invoice"]] },
+			production: { label: "Production", docs: [["Work Orders", "Work Order"], ["Production Plans", "Production Plan"]] },
+			service: { label: "Maintenance", docs: [["Assets", "Asset"], ["Maintenance Logs", "Asset Maintenance Log"]] },
+			hr: { label: "People", docs: [["Employees", "Employee"], ["Attendance", "Attendance"], ["Payroll Entries", "Payroll Entry"]] },
+			management: { label: "Management", docs: [["Sales Orders", "Sales Order"], ["Purchase Orders", "Purchase Order"], ["Employees", "Employee"]] },
+		};
+		let selected = kinds.includes("admin") ? ["crm", "sales", "purchase", "production", "service", "hr"] : kinds;
+		selected = [...new Set(selected)].filter((kind) => chartGroups[kind]);
+		const entries = selected.map((kind) => ({ label: chartGroups[kind].label, doctype: chartGroups[kind].docs.map((item) => item[1]) }));
+		if (!entries.length) { $("#workflow-bars").innerHTML = '<p class="charts-empty">No chart data is available for this role.</p>'; return; }
+		const values = await Promise.all(entries.map(async (entry) => {
+			const counts = await Promise.all(entry.doctype.map((doctype) => getCount(doctype, {})));
+			const valid = counts.map((count) => count === "—" ? null : Number(String(count).replaceAll(",", ""))).filter((count) => count !== null && Number.isFinite(count));
+			return { label: entry.label, count: valid.length ? valid.reduce((sum, count) => sum + count, 0) : null };
+		}));
+		const max = Math.max(1, ...values.map((item) => item.count || 0));
+		const colors = ["#367fa7", "#e19752", "#697fab", "#50a0ad", "#b1748f", "#71859a"];
+		$("#workflow-bars").innerHTML = values.map((item, index) => `<div class="workflow-bar-row"><span class="workflow-bar-label">${escapeHtml(item.label)}</span><span class="workflow-bar-track"><span class="workflow-bar-fill" style="display:block;width:${item.count === null ? 0 : Math.max(item.count ? 3 : 0, item.count / max * 100)}%;background:${colors[index % colors.length]}"></span></span><strong class="workflow-bar-value">${item.count === null ? "—" : new Intl.NumberFormat().format(item.count)}</strong></div>`).join("");
+		const available = values.filter((item) => item.count !== null);
+		const total = available.reduce((sum, item) => sum + item.count, 0);
+		$("#chart-total").textContent = available.length ? new Intl.NumberFormat().format(total) : "—";
+		const circumference = 2 * Math.PI * 40;
+		let offset = 0;
+		$("#donut-segments").innerHTML = available.map((item) => {
+			const index = values.indexOf(item);
+			const length = total ? item.count / total * circumference : 0;
+			const segment = `<circle class="donut-segment" cx="60" cy="60" r="40" stroke="${colors[index % colors.length]}" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}"></circle>`;
+			offset += length;
+			return segment;
+		}).join("");
+		$("#chart-legend").innerHTML = values.map((item) => { const index = values.indexOf(item); const share = total && item.count !== null ? Math.round(item.count / total * 100) : 0; return `<div class="legend-item"><span class="legend-swatch" style="background:${colors[index % colors.length]}"></span><span>${escapeHtml(item.label)}</span><strong class="legend-value">${item.count === null ? "—" : share + "%"}</strong></div>`; }).join("");
 	}
 	function pageHeader(title, subtitle, action) {
 		return `<div class="custom-page-head"><div><p class="eyebrow">OPERATIONS WORKSPACE</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(subtitle || "Manage work with the same Frappe permissions and validations.")}</p></div>${action || ""}</div>`;
@@ -389,6 +432,7 @@
 			$("#primary-action").innerHTML = `<span>${escapeHtml(actionLabel)}</span><span>→</span>`;
 			renderReports(roles);
 			renderNav(kinds); renderCards(kinds); renderMetrics(kinds); renderCustomNav();
+			if (!new URLSearchParams(window.location.search).get("view")) renderCharts(kinds);
 		} catch (_) { window.location.replace("/industrial-login"); }
 	}
 	$("#portal-date").textContent = new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" }).format(new Date());

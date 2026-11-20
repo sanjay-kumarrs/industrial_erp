@@ -1,0 +1,49 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Ironworks ERP · Operations, in focus{% endblock %}
+{% block head_include %}<link rel="stylesheet" href="/assets/industrial_erp/css/industrial_portal.css">{% endblock %}
+{% block page_content %}
+<main class="welcome-page">
+  <header class="welcome-topbar">
+    <a class="brand-lockup welcome-brand" href="/"><span class="brand-mark">I</span><span>IRONWORKS <small>OPERATIONS ERP</small></span></a>
+    <div class="welcome-status"><span class="status-dot"></span> OPERATIONS PLATFORM</div>
+  </header>
+  <section class="welcome-hero">
+    <div class="welcome-orbit welcome-orbit-one" aria-hidden="true"></div>
+    <div class="welcome-orbit welcome-orbit-two" aria-hidden="true"></div>
+    <div class="welcome-copy">
+      <p class="eyebrow">A CLEARER VIEW OF INDUSTRIAL OPERATIONS</p>
+      <h1>Every moving part.<br><span>In focus.</span></h1>
+      <p class="welcome-lede">Bring customers, procurement and production into one confident workflow. Make the next move with the whole operation in view.</p>
+      <a class="button welcome-cta" href="/industrial-login"><span>Enter your workspace</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></a>
+      <div class="welcome-proof"><span class="proof-line"></span> ONE CONNECTED WORKSPACE <span class="proof-dot">·</span> BUILT FOR THE FLOOR AND THE FRONT OFFICE</div>
+    </div>
+    <div class="welcome-visual" aria-hidden="true">
+      <div class="visual-label visual-label-top"><span class="pulse-mark"></span> LIVE OPERATIONS</div>
+      <svg class="welcome-machine" viewBox="0 0 720 510" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="machineFill" x1="145" y1="84" x2="537" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#365F82"/><stop offset="1" stop-color="#172C40"/></linearGradient><linearGradient id="machineEdge" x1="145" y1="72" x2="560" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#7CA8C9"/><stop offset="1" stop-color="#54718A"/></linearGradient><linearGradient id="chartLine" x1="200" y1="355" x2="505" y2="190" gradientUnits="userSpaceOnUse"><stop stop-color="#F0A35A"/><stop offset="1" stop-color="#9CC8DF"/></linearGradient></defs>
+        <path d="M157 91 358 31l203 60v309l-203 71-201-71V91Z" fill="url(#machineFill)" stroke="url(#machineEdge)" stroke-width="2"/>
+        <path d="m157 91 201 62 203-62M358 153v318M157 91v309l201 71M561 91v309l-203 71" stroke="#9AB6CA" stroke-opacity=".42" stroke-width="1.5"/>
+        <path d="M193 122v251M225 132v252M257 142v252M289 152v252M321 162v252M396 151v252M428 141v252M460 131v252M492 121v252M524 111v252" stroke="#A5C2D2" stroke-opacity=".18"/>
+        <path d="M187 205h334M187 254h334M187 303h334M187 352h334" stroke="#A5C2D2" stroke-opacity=".18"/>
+        <rect x="220" y="185" width="230" height="133" rx="9" fill="#102337" stroke="#7396B0" stroke-opacity=".7"/>
+        <path d="M244 287h181M244 256h181M244 225h181" stroke="#7290A4" stroke-opacity=".28"/>
+        <path d="m249 274 39-28 33 11 39-42 32 16 35-28" stroke="url(#chartLine)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="427" cy="203" r="6" fill="#F0A35A" stroke="#fff" stroke-opacity=".8" stroke-width="2"/>
+        <rect x="236" y="338" width="78" height="26" rx="4" fill="#1C3B54" stroke="#7798AF" stroke-opacity=".45"/><rect x="326" y="338" width="78" height="26" rx="4" fill="#1C3B54" stroke="#7798AF" stroke-opacity=".45"/><rect x="416" y="338" width="78" height="26" rx="4" fill="#1C3B54" stroke="#7798AF" stroke-opacity=".45"/>
+        <path d="M254 351h42M344 351h42M434 351h42" stroke="#C5D8E4" stroke-opacity=".56" stroke-width="3" stroke-linecap="round"/>
+        <path d="M184 400h347" stroke="#B6D1DF" stroke-opacity=".5" stroke-width="2"/><path d="m159 413 199 70 203-70" stroke="#9AB6CA" stroke-opacity=".48" stroke-width="2"/>
+        <circle cx="358" cy="79" r="6" fill="#F0A35A"/><circle cx="184" cy="95" r="4" fill="#B7D8E9"/><circle cx="535" cy="95" r="4" fill="#B7D8E9"/>
+      </svg>
+      <div class="visual-label visual-label-bottom"><span class="visual-tag-icon">↗</span><span>CONNECTED WORKFLOWS<small>CRM · SALES · PROCUREMENT</small></span></div>
+      <div class="visual-orbit-dot orbit-dot-one"></div><div class="visual-orbit-dot orbit-dot-two"></div>
+    </div>
+  </section>
+  <section class="welcome-capabilities" aria-label="Platform capabilities">
+    <article class="capability-card"><span class="capability-icon icon-cobalt"><svg viewBox="0 0 24 24"><path d="M4 19V8l8-4 8 4v11M4 9l8 4 8-4M12 13v7M8 6l8 4"/></svg></span><div><h2>Customer relationships</h2><p>Leads, follow-ups and opportunities.</p></div><span class="capability-index">01</span></article>
+    <article class="capability-card"><span class="capability-icon icon-copper"><svg viewBox="0 0 24 24"><path d="M3 7h18l-2 13H5L3 7ZM8 7l4-4 4 4M9 12h6M9 16h6"/></svg></span><div><h2>Sales & delivery</h2><p>From quotation to customer order.</p></div><span class="capability-index">02</span></article>
+    <article class="capability-card"><span class="capability-icon icon-steel"><svg viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11M8 20v-6h8v6M8 10h.01M12 10h.01M16 10h.01"/></svg></span><div><h2>Purchase & production</h2><p>Keep material and work moving.</p></div><span class="capability-index">03</span></article>
+  </section>
+  <footer class="welcome-footer"><span>IRONWORKS OPERATIONS ERP</span><span>PRECISION IN EVERY PROCESS <i>·</i> POWERED BY FRAPPE</span></footer>
+</main>
+{% endblock %}
