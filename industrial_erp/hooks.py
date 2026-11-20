@@ -274,5 +274,8 @@ doc_events = {
     },
     "Purchase Receipt": {
     "validate": "industrial_erp.events.purchase_receipt.validate_purchase_receipt_over_receipt"
-}
+    },
+    "Lead": {
+        "validate": "industrial_erp.events.lead.validate_duplicate_mobile"
+    }
 }
